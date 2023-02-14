@@ -12,13 +12,32 @@ namespace Mission06_adfish.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private MoviesContext _moviesContext { get; set; }
+        public HomeController(ILogger<HomeController> logger, MoviesContext DbMovieContext)
         {
             _logger = logger;
+            _moviesContext = DbMovieContext;
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult AddMovie()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddMovie(Movie response)
+        {
+            _moviesContext.Add(response);
+            _moviesContext.SaveChanges();
+            return View("ConfirmEntry", response);
+        }
+
+        public IActionResult Podcasts()
         {
             return View();
         }
