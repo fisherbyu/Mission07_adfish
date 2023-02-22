@@ -11,17 +11,23 @@ namespace Mission06_adfish.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        
         private MoviesContext _moviesContext { get; set; }
-        public HomeController(ILogger<HomeController> logger, MoviesContext DbMovieContext)
+        public HomeController( MoviesContext DbMovieContext)
         {
-            _logger = logger;
             _moviesContext = DbMovieContext;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult MyMovies()
+        {
+            var MovieList = _moviesContext.Responses.ToList();
+
+            return View(MovieList);
         }
 
         [HttpGet]
@@ -42,15 +48,6 @@ namespace Mission06_adfish.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        
     }
 }

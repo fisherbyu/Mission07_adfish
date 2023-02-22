@@ -13,7 +13,8 @@ namespace Mission06_adfish.Models
 
         }
 
-        public DbSet<Movie> responses { get; set; }
+
+        public DbSet<Movie> Responses { get; set; }
 
     }
 }
