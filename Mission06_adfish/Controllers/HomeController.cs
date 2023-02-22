@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mission06_adfish.Models;
 using System;
@@ -25,7 +26,9 @@ namespace Mission06_adfish.Controllers
 
         public IActionResult MyMovies()
         {
-            var MovieList = _moviesContext.Responses.ToList();
+            var MovieList = _moviesContext.Responses
+                .Include(x => x.Category)
+                .ToList();
 
             return View(MovieList);
         }
@@ -33,14 +36,23 @@ namespace Mission06_adfish.Controllers
         [HttpGet]
         public IActionResult AddMovie()
         {
+            ViewBag.Categories = _moviesContext.Categories.ToList();
             return View();
         }
         [HttpPost]
         public IActionResult AddMovie(Movie response)
         {
-            _moviesContext.Add(response);
-            _moviesContext.SaveChanges();
-            return View("ConfirmEntry", response);
+            if (ModelState.IsValid)
+            {
+                _moviesContext.Add(response);
+                _moviesContext.SaveChanges();
+                return View("ConfirmEntry", response);
+            }
+            else
+            {
+                ViewBag.Categories = _moviesContext.Categories.ToList();
+                return View();
+            }
         }
 
         public IActionResult Podcasts()
@@ -48,6 +60,39 @@ namespace Mission06_adfish.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Edit(int MovieId)
+        {
+            ViewBag.Categories = _moviesContext.Categories.ToList();
+
+            var movie = _moviesContext.Responses.Single(x => x.MovieId == MovieId);
+
+            return View("AddMovie", movie);
+        }
+        [HttpPost]
+        public IActionResult Edit(Movie response)
+        {
+            _moviesContext.Update(response);
+            _moviesContext.SaveChanges();
+            return RedirectToAction("MyMovies");
+        }
         
+        
+        [HttpGet]
+        public IActionResult Delete(int MovieID)
+        {
+            var movie = _moviesContext.Responses.Single(x => x.MovieId == MovieID);
+
+            return View(movie);
+        }
+        [HttpPost]
+        public IActionResult Delete(Movie response)
+        {
+            _moviesContext.Responses.Remove(response);
+            _moviesContext.SaveChanges();
+            return RedirectToAction("MyMovies");
+        }
+
+
     }
 }
